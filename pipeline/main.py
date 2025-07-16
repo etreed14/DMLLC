@@ -7,7 +7,10 @@ app = Flask(__name__)
 storage_client = storage.Client()
 
 # GOOGLE API V2 endpoint
-SPEECH_API_URL = "https://speech.googleapis.com/v2/projects/transcriptionpipeline-465613/locations/us-east1/recognizers/_:recognize"
+SPEECH_API_URL = (
+    "https://speech.googleapis.com/v2/projects/"
+    "transcriptionpipeline-465613/locations/us-east1/recognizers/_:recognize"
+)
 
 @app.route("/transcribe", methods=["POST"])
 def transcribe():
@@ -15,12 +18,11 @@ def transcribe():
     bucket = data["bucket"]
     file_name = data["name"]
 
-    if not file_name.endswith(".wav"):
-        return "Not a WAV file", 200
+    if not (file_name.endswith(".wav") or file_name.endswith(".mp3")):
+        return "Unsupported file type", 200
 
     gcs_uri = f"gs://{bucket}/{file_name}"
 
-    headers = {"Content-Type": "application/json"}
     payload = {
         "config": {
             "autoDecodingConfig": {},
@@ -59,11 +61,15 @@ def transcribe():
         for alt in chunk.get("alternatives", []):
             transcript += alt.get("transcript", "") + "\n"
 
-    # Save to GCS as .txt
-    output_blob = storage_client.bucket(bucket).blob(file_name.replace(".wav", ".txt"))
-    output_blob.upload_from_string(transcript)
+    # Determine output filename inside Transcripts/
+    base_name = file_name.rsplit("/", 1)[-1].rsplit(".", 1)[0]  # remove path + extension
+    output_path = f"Transcripts/{base_name}.txt"
 
-    return f"Transcript saved for {file_name}", 200
+    # Save transcript to Cloud Storage
+    output_blob = storage_client.bucket(bucket).blob(output_path)
+    output_blob.upload_from_string(transcript, content_type="text/plain")
+
+    return f"Transcript saved to {output_path}", 200
 
 if __name__ == "__main__":
     import os
