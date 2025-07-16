@@ -43,7 +43,7 @@
 - Key themes or highlights are extracted based on custom Gemini 2.5 prompts.
 - Output summaries are saved in the DMLLC/Summaries/ folder.
 
-### 🚀 Email (In Next Version)
+### 🚀 Email (Next Version)
 - Trigger call pulls summaries when added to folder
 - Google email client creates email and adds summary
 - Summary is sent to jdematteo@dmllc.com & email who uploaded original transcript
