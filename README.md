@@ -1,6 +1,6 @@
 # DMLLC Mtg Pipeline
 
-### 🎵 Audios
+### 🏁 Audios
 
 - User drops an .mp3 or .wav audio file into the audios/ folder in Google Cloud Storage.
 - This upload automatically triggers the pipeline.
