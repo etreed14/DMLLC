@@ -1,0 +1,9 @@
+name: DMLLC-AutoDeploy
+description: Auto-deploy on push to main with proper logging
+github:
+ owner: etreed14
+ name: DMLLC
+ push:
+    branch: ^main$
+filename: cloudbuild.yaml
+serviceAccount: transcriptionsvc@transcriptionpipeline-465613.iam.gserviceaccount.com
