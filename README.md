@@ -21,8 +21,6 @@
 • Audio .mp3 files are converted to .wav files for processing
 • Converted audio files are sent to transcription phase 1
 
-## 🏁 Transcription
-
 ### 🏎️ Raw Transcription
 
 • Google Speech-to-Text v2 API is used with punctuation and speaker diarization enabled.
