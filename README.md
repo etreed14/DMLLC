@@ -17,4 +17,4 @@
 2. Deploy:  
    
 
-3. Trigger via Eventarc on file upload to summary
+3. Trigger via Eventarc on file upload
