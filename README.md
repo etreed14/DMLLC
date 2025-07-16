@@ -1,19 +1,5 @@
 # DMLLC
 
-### 📂 Structure
-### 🧠 Features
-
-- Auto-transcribes  or  files uploaded to 
-- Uses **Google Speech-to-Text v2** (with punctuation + speaker diarization)
-- Outputs formatted text to 
-- Everything is Dockerized and deployable to Cloud Run
-- Includes formatting utilities
-
-
-
-
-# DMLLC
-
 ### 🎵 Audios
 
 - User drops an .mp3 or .wav audio file into the audios/ folder in Google Cloud Storage.
@@ -23,7 +9,7 @@
 
 ### 🏎️ Raw Transcription
 
-- Google Speech-to-Text v2 API is used with punctuation and speaker diarization enabled.
+- Uses **Google Speech-to-Text v2** (with punctuation + speaker diarization enabled)
 - Transcription results are returned in structured JSON format with confidense levels.
 - Transcripts are saved in the Transcripts/ folder.
 - Converted audio files are sent to transcription phase 2
