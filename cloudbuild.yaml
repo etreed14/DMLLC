@@ -1,6 +1,12 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/dmllcpipeline', '.']
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/dmllcpipeline'
+      - '-f'
+      - './Dockerfile'
+      - '.'  # Use root as build context
 
 images:
   - 'gcr.io/$PROJECT_ID/dmllcpipeline'
