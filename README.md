@@ -36,5 +36,4 @@
 
 ### 🪐 Portal (Next Next Version)
 - Confirmed summaries are converted to custom html-formatted docs
-- Matched html text is pushed to site in new section
-- Each section uses relevant html formatting to upload each type to correct spot
+- Matched html text is uploaded to site in relevant meeting section
