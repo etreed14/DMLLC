@@ -33,3 +33,8 @@
 - Trigger call pulls summaries when added to folder
 - Google email client creates email and adds summary
 - Summary is sent to jdematteo@dmllc.com & email who uploaded original transcript
+
+### 🪐 Portal (Next Next Version)
+- Confirmed summaries are converted to custom html-formatted docs
+- Matched html text is pushed to site in new section
+- Each section uses relevant html formatting to upload each type to correct spot
