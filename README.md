@@ -22,7 +22,7 @@
 - Long silences/irrelevant segments may be removed/merged.
 - Transcripts are saved in the DMLLC/Transcripts/ folder.
 
-### ✈️ Summarize
+### 🛩️ Summarize
 
 - Trigger call pulls transript when added to folder
 - A summarization script produces an overview of the call or meeting.
