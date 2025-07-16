@@ -14,25 +14,23 @@
 
 # DMLLC
 
-###🎵 Audios
+### 🎵 Audios
 
 • User drops an .mp3 or .wav audio file into the audios/ folder in Google Cloud Storage.
 • This upload automatically triggers the pipeline.
 • Audio .mp3 files are converted to .wav files for processing
 • Converted audio files are sent to transcription phase 1
 
-⸻
+## 🏁 Transcription
 
-##🏁 Transcription
-
-###🏎️ Raw Transcription
+### 🏎️ Raw Transcription
 
 • Google Speech-to-Text v2 API is used with punctuation and speaker diarization enabled.
 • Transcription results are returned in structured JSON format with confidense levels.
 • Transcripts are saved in the Transcripts/ folder.
 • Converted audio files are sent to transcription phase 2
 
-###⛵ Clean Transcription
+### ⛵ Clean Transcription
 
 • Gemini 2.5 uses confidense levels and context to clean up words/phrasing throughout transcript
 • A post-processing script formats transcripts into clean, readable text.
@@ -40,9 +38,7 @@
 • Long silences/irrelevant segments may be removed/merged.
 • Transcripts are saved in the DMLLC/Transcripts/ folder.
 
-⸻
-
-###✈️ Summarize
+### ✈️ Summarize
 
 • Trigger call pulls transript when added to folder
 • A summarization script produces an overview of the call or meeting.
