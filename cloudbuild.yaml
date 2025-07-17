@@ -8,5 +8,8 @@ steps:
       - './Dockerfile'
       - '.'  # Use root as build context
 
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 images:
   - 'gcr.io/$PROJECT_ID/dmllcpipeline'
