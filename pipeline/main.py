@@ -2,6 +2,31 @@ from flask import Flask, request
 import requests
 import json
 from google.cloud import storage
+import pathlib, time, threading, subprocess
+
+
+def _watch_for_mp3s(poll_seconds: int = 20):
+    aud_dir = pathlib.Path("audios")
+    out_dir = pathlib.Path("Transcripts")
+    out_dir.mkdir(exist_ok=True)
+
+    print("[watcher] running, polling", poll_seconds, "s", flush=True)
+
+    while True:
+        for mp3 in aud_dir.glob("*.mp3"):
+            tgt = out_dir / f"{mp3.stem}.txt"
+            if tgt.exists():
+                continue
+            try:
+                print("[watcher] transcribing", mp3.name, flush=True)
+                txt = subprocess.check_output(
+                    ["python", "pipeline/transcribe.py", str(mp3)]
+                ).decode()
+                tgt.write_text(txt)
+                print("[watcher] ✅", tgt.name, "written", flush=True)
+            except Exception as e:
+                print("[watcher] ❌", mp3.name, "→", e, flush=True)
+        time.sleep(poll_seconds)
 
 app = Flask(__name__)
 storage_client = storage.Client()
@@ -91,4 +116,5 @@ def transcribe():
 if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 8080))
+    threading.Thread(target=_watch_for_mp3s, daemon=True).start()
     app.run(host="0.0.0.0", port=port)
