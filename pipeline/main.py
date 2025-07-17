@@ -115,6 +115,6 @@ def transcribe():
 
 if __name__ == "__main__":
     import os
-    threading.Thread(target=_watch_for_mp3s, daemon=True).start()
     port = int(os.environ.get("PORT", 8080))
+    threading.Thread(target=_watch_for_mp3s, daemon=True).start()
     app.run(host="0.0.0.0", port=port)
