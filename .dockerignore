@@ -1,3 +1,0 @@
-!.dockerignore
-!pipeline/requirements.txt
-!pipeline/**
