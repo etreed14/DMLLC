@@ -6,6 +6,10 @@ from google.cloud import storage
 app = Flask(__name__)
 storage_client = storage.Client()
 
+# Output bucket and prefix
+OUTPUT_BUCKET = "dmllc"
+OUTPUT_PREFIX = "transcripts/"
+
 # Google STT V2 endpoint
 SPEECH_API_URL = "https://speech.googleapis.com/v2/projects/transcriptionpipeline-465613/locations/us-east1/recognizers/_:recognize"
 
@@ -73,14 +77,14 @@ def transcribe():
             print("Empty transcript result.")
             return "Transcript was empty", 200
 
-        # Save .txt to Transcripts/ folder
+        # Save .txt to OUTPUT_PREFIX folder in OUTPUT_BUCKET
         transcript_name = file_name.rsplit(".", 1)[0] + ".txt"
-        blob_path = f"Transcripts/{transcript_name}"
-        blob = storage_client.bucket(bucket).blob(blob_path)
+        blob_path = f"{OUTPUT_PREFIX}{transcript_name}"
+        blob = storage_client.bucket(OUTPUT_BUCKET).blob(blob_path)
         blob.upload_from_string(transcript)
-        print(f"Saved transcript to {blob_path}")
+        print(f"Saved transcript to {OUTPUT_BUCKET}/{blob_path}")
 
-        return f"Transcript saved to {blob_path}", 200
+        return f"Transcript saved to {OUTPUT_BUCKET}/{blob_path}", 200
 
     except Exception as e:
         import traceback
