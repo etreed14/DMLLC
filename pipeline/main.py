@@ -2,6 +2,7 @@ from flask import Flask, request
 import requests
 import json
 from google.cloud import storage
+import os
 
 app = Flask(__name__) #
 storage_client = storage.Client()
@@ -78,7 +79,7 @@ def transcribe():
             return "Transcript was empty", 200
 
         # Save .txt to OUTPUT_PREFIX folder in OUTPUT_BUCKET
-        transcript_name = file_name.rsplit(".", 1)[0] + ".txt"
+        transcript_name = os.path.basename(file_name).rsplit(".", 1)[0] + ".txt"
         blob_path = f"{OUTPUT_PREFIX}{transcript_name}"
         blob = storage_client.bucket(OUTPUT_BUCKET).blob(blob_path)
         blob.upload_from_string(transcript)
