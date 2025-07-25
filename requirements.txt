@@ -2,4 +2,5 @@ flask
 requests
 google-cloud-storage
 google-cloud-speech
+tenacity
 pytest

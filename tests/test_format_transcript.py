@@ -1,8 +1,10 @@
-import pipeline.format_transcript as ft
+import dmllc.format_transcript as ft
+
 
 def test_parse_seconds():
     assert ft.parse_seconds('1.5s') == 1.5
     assert ft.parse_seconds('0s') == 0.0
+
 
 def test_format_transcript_basic():
     words = [

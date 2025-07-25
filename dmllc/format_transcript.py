@@ -1,9 +1,15 @@
-import json, os, re
+import json
+import os
+import re
 from google.cloud import storage
 
 
 def list_json_blobs(bucket, prefix="transcripts/JSON"):
-    return [blob for blob in bucket.list_blobs(prefix=prefix) if blob.name.lower().endswith(".json")]
+    return [
+        blob
+        for blob in bucket.list_blobs(prefix=prefix)
+        if blob.name.lower().endswith(".json")
+    ]
 
 
 def flatten_word_info(data):

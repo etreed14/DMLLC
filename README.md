@@ -1,6 +1,13 @@
 # DMLLC Pipeline V3
+![CI](https://github.com/OWNER/REPO/actions/workflows/test.yml/badge.svg)
 
-### 🏁 Audios
+### 🏁 Pipeline Flow
+
+```
+audio file -> GCS bucket -> Cloud Function -> raw JSON -> formatter -> transcript
+```
+
+### Audios
 
 - User drops an .mp3 or .wav audio file into the audios/ folder in Google Cloud Storage.
 - This upload automatically triggers the pipeline.
@@ -46,7 +53,7 @@
    ```
 3. Run the Flask service locally:
    ```bash
-   python pipeline/main.py
+   python dmllc/main.py
    ```
 4. To test the Cloud Function locally, invoke `transcribe_audio.transcribe_audio` with a mock event.
 
@@ -68,10 +75,12 @@ Create a `.env` file based on `.env.example` when running locally.
 
 `cloudbuild.yaml` builds the Docker image and the Cloud Build trigger defined in `trigger.yaml` deploys on pushes to the `main` branch. Ensure the service account has permission to access Storage and Speech-to-Text APIs.
 
+GitHub Actions (`.github/workflows/`) run linting and tests on every push.
+
 The project structure is:
 
 ```
-pipeline/            Flask app and Cloud Function code
+dmllc/               Flask app and Cloud Function code
 audios/              Sample audio files
 Dockerfile           Container for running the Flask service
 ```

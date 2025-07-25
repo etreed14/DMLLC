@@ -26,7 +26,7 @@ from google.cloud import speech_v1p1beta1 as speech  # Use v1p1beta1 for advance
 from google.cloud import storage
 from google.protobuf.json_format import MessageToDict
 
-import format_transcript  # Assumes this module is available in the same package
+from . import format_transcript
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 
@@ -107,4 +107,3 @@ def transcribe_audio(event: Dict[str, Any], context: Any) -> None:
 
     except Exception:
         logging.exception("Error in transcribe_audio")
-
