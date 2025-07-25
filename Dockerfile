@@ -7,4 +7,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python", "pipeline/main.py"]
+CMD ["python", "dmllc/main.py"]
