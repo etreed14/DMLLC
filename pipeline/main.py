@@ -3,30 +3,37 @@ import requests
 import json
 from google.cloud import storage
 import os
+import logging
 
-app = Flask(__name__) #
+logging.basicConfig(level=logging.INFO, format="%(message)s")
+
+app = Flask(__name__)
 storage_client = storage.Client()
 
 # Output bucket and prefix
-OUTPUT_BUCKET = "dmllc"
-OUTPUT_PREFIX = "transcripts/"
+OUTPUT_BUCKET = os.environ.get("OUTPUT_BUCKET", "dmllc")
+OUTPUT_PREFIX = os.environ.get("OUTPUT_PREFIX", "transcripts/")
 
 # Google STT V2 endpoint
-SPEECH_API_URL = "https://speech.googleapis.com/v2/projects/transcriptionpipeline-465613/locations/us-east1/recognizers/_:recognize"
+SPEECH_API_URL = os.environ.get(
+    "SPEECH_API_URL",
+    "https://speech.googleapis.com/v2/projects/transcriptionpipeline-465613/locations/us-east1/recognizers/_:recognize",
+)
 
 @app.route("/transcribe", methods=["POST"])
 def transcribe():
     try:
         data = request.get_json()
-        bucket = data["bucket"]
-        file_name = data["name"]
+        bucket = data.get("bucket")
+        file_name = data.get("name")
+        logging.info(json.dumps({"event": "request", "bucket": bucket, "file": file_name}))
 
-        if not file_name.lower().endswith((".mp3", ".wav")):
-            print(f"Skipping non-audio file: {file_name}")
+        if not file_name or not file_name.lower().endswith((".mp3", ".wav")):
+            logging.info(json.dumps({"event": "skip_non_audio", "file": file_name}))
             return "Not an audio file", 200
 
         gcs_uri = f"gs://{bucket}/{file_name}"
-        print(f"Starting transcription for: {gcs_uri}")
+        logging.info(json.dumps({"event": "start_transcription", "gcs_uri": gcs_uri}))
 
         # Prepare STT V2 payload
         payload = {
@@ -48,8 +55,9 @@ def transcribe():
         )
         token = token_response.json().get("access_token")
         if not token:
-            print("No token found in metadata response.")
+            logging.error(json.dumps({"event": "token_error"}))
             return "Failed to get auth token", 500
+        logging.info(json.dumps({"event": "token_acquired"}))
 
         # Call STT API
         response = requests.post(
@@ -62,11 +70,11 @@ def transcribe():
         )
 
         if response.status_code != 200:
-            print(f"STT API error:\n{response.text}")
+            logging.error(json.dumps({"event": "stt_error", "status": response.status_code}))
             return f"Transcription failed: {response.text}", 500
 
         result = response.json()
-        print("Received STT response.")
+        logging.info(json.dumps({"event": "stt_response"}))
 
         # Extract transcript
         transcript = ""
@@ -75,7 +83,7 @@ def transcribe():
                 transcript += alt.get("transcript", "") + "\n"
 
         if not transcript.strip():
-            print("Empty transcript result.")
+            logging.info(json.dumps({"event": "empty_transcript"}))
             return "Transcript was empty", 200
 
         # Save .txt to OUTPUT_PREFIX folder in OUTPUT_BUCKET
@@ -83,14 +91,12 @@ def transcribe():
         blob_path = f"{OUTPUT_PREFIX}{transcript_name}"
         blob = storage_client.bucket(OUTPUT_BUCKET).blob(blob_path)
         blob.upload_from_string(transcript)
-        print(f"Saved transcript to {OUTPUT_BUCKET}/{blob_path}")
+        logging.info(json.dumps({"event": "transcript_saved", "bucket": OUTPUT_BUCKET, "path": blob_path}))
 
         return f"Transcript saved to {OUTPUT_BUCKET}/{blob_path}", 200
 
     except Exception as e:
-        import traceback
-        print("=== ERROR OCCURRED DURING /transcribe ===")
-        traceback.print_exc()
+        logging.exception("Error in /transcribe")
         return f"Server error: {str(e)}", 500
 
 if __name__ == "__main__":
