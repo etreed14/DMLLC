@@ -28,7 +28,7 @@ from typing import Any, Dict
 
 from google.cloud import storage
 
-from . import audioProcessor, sttService, transcriptFormatter, transcriptCleaner, summarizer
+from . import audio_processor, sttService, transcriptFormatter, transcriptCleaner, summarizer
 
 logger = logging.getLogger(__name__)
 
