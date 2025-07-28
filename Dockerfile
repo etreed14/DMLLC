@@ -1,10 +1,14 @@
 FROM python:3.11-slim
 
+ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
-COPY requirements.txt ./requirements.txt
+COPY pipeline/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Copy pipeline code into the image
+COPY pipeline /app/pipeline
 
-CMD ["python", "pipeline/main.py"]
+# Default command simply starts a small HTTP server using the HTTP entrypoint.
+# When deploying to Cloud Functions, the entrypoint is overridden.
+CMD ["python", "-m", "pipeline.main"]
