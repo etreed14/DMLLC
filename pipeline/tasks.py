@@ -28,10 +28,8 @@ from typing import Any, Dict
 
 from google.cloud import storage
 
-import audio_processor
-from . import sttService, transcriptFormatter, transcriptCleaner, summarizer
 
-logger = logging.getLogger(__name__)
+from . import audio_processor, stt_service, transcript_formatter, transcript_cleaner, summarizer
 
 # Define folder prefixes
 AUDIO_PREFIX = "Audios/"
@@ -107,21 +105,20 @@ def processAudioUpload(bucket_name: str, file_name: str) -> None:
             _uploadBlob(bucket, converted_path, wav_name, content_type="audio/wav")
             wav_uri = f"gs://{bucket_name}/{wav_name}"
         else:
-            wav_uri = f"gs://{bucket_name}/{file_name}"
+wav_uri = f"gs://{bucket_name}/{file_name}"
         # Transcribe
-        response_dict = sttService.transcribe(wav_uri)
-        # Save raw JSON
+response_dict = stt_service.transcribe(wav_uri)
         base_name = _deriveBaseName(file_name)
         json_name = f"{TRANSCRIPTS_PREFIX}JSON_{base_name}.json"
         json_blob = bucket.blob(json_name)
         json_blob.upload_from_string(json.dumps(response_dict), content_type="application/json")
         logger.info("Saved raw transcript to %s", json_name)
         # Format transcript
-        words = transcriptFormatter.flattenWordInfo(response_dict)
-        formatted = transcriptFormatter.formatTranscript(words)
+    words = ttranscript_formatter.flatten_word_info(response_dict)
+        formatted = tratranscript_formatter.format_transcript
         # Optionally clean transcript
         if os.environ.get("ENABLE_CLEANING", "false").lower() == "true":
-            formatted = transcriptCleaner.cleanTranscript(formatted, words=words)
+formatted = transcript_cleaner.clean_transcript(formatted, words=words)
         text_name = f"{TRANSCRIPTS_PREFIX}{base_name}.txt"
         txt_blob = bucket.blob(text_name)
         txt_blob.upload_from_string(formatted, content_type="text/plain")
