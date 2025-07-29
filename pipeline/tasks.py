@@ -101,7 +101,7 @@ def processAudioUpload(bucket_name: str, file_name: str) -> None:
     try:
         # Convert to WAV if necessary
         if ext != ".wav":
-            converted_path = audioProcessor.convertToWav(local_path)
+            converted_path = audio_processor.convert_to_wav(local_path)
             # Upload converted WAV back to the same folder with .wav suffix
             wav_name = re.sub(r"\.(mp3|m4a|flac|mp4)$", ".wav", file_name, flags=re.IGNORECASE)
             _uploadBlob(bucket, converted_path, wav_name, content_type="audio/wav")
@@ -136,8 +136,8 @@ def processAudioUpload(bucket_name: str, file_name: str) -> None:
                 logger.info("Saved summary to %s", summary_name)
     finally:
         # Clean up temporary files
-        audioProcessor.cleanupTempFile(local_path)
-        audioProcessor.cleanupTempFile(converted_path)
+        audio_processor.cleanup_temp_file(local_path)
+        audio_processor.cleanup_temp_file(converted_path)
 
 
 def processTranscriptUpload(bucket_name: str, file_name: str) -> None:
@@ -176,4 +176,4 @@ def processTranscriptUpload(bucket_name: str, file_name: str) -> None:
         blob.upload_from_string(summary, content_type="text/plain")
         logger.info("Saved summary to %s", summary_name)
     finally:
-        audioProcessor.cleanupTempFile(local_path)
+        audio_processor.cleanup_temp_file(local_path)
