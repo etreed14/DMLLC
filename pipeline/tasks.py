@@ -1,6 +1,6 @@
 """
 Orchestration layer for the transcription pipeline.
-
+ 
 This module defines helper functions that are called from the Cloud
 Function entrypoint in :mod:`pipeline.main`.  They coordinate the steps of
 the pipeline:
