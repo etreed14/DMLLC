@@ -28,8 +28,17 @@ from typing import Any, Dict
 
 from google.cloud import storage
 
+# Create a module-level logger.  Cloud Functions automatically capture
+# the root logger, so using a named logger allows more fine-grained control.
+logger = logging.getLogger(__name__)
 
-from . import audio_processor, stt_service, transcript_formatter, transcript_cleaner, summarizer
+# Import pipeline modules using snake_case names.  These modules live in
+# the same package and expose the functionality used by this orchestrator.
+from . import audio_processor
+from . import stt_service
+from . import transcript_formatter
+from . import transcript_cleaner
+from . import summarizer
 
 # Define folder prefixes
 AUDIO_PREFIX = "Audios/"
@@ -85,6 +94,7 @@ def processAudioUpload(bucket_name: str, file_name: str) -> None:
     """
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
+    # Only process files in the Audios/ prefix.  Matching is case‑sensitive.
     if not file_name.startswith(AUDIO_PREFIX):
         logger.info("Ignoring file outside of %s: %s", AUDIO_PREFIX, file_name)
         return
@@ -95,7 +105,7 @@ def processAudioUpload(bucket_name: str, file_name: str) -> None:
     logger.info("Processing audio upload %s", file_name)
     # Download original file
     local_path = _downloadBlob(bucket, file_name)
-    converted_path = None
+    converted_path: str | None = None
     try:
         # Convert to WAV if necessary
         if ext != ".wav":
@@ -105,20 +115,21 @@ def processAudioUpload(bucket_name: str, file_name: str) -> None:
             _uploadBlob(bucket, converted_path, wav_name, content_type="audio/wav")
             wav_uri = f"gs://{bucket_name}/{wav_name}"
         else:
-wav_uri = f"gs://{bucket_name}/{file_name}"
-        # Transcribe
-response_dict = stt_service.transcribe(wav_uri)
+            wav_uri = f"gs://{bucket_name}/{file_name}"
+        # Transcribe the audio
+        response_dict: Dict[str, Any] = stt_service.transcribe(wav_uri)
         base_name = _deriveBaseName(file_name)
         json_name = f"{TRANSCRIPTS_PREFIX}JSON_{base_name}.json"
         json_blob = bucket.blob(json_name)
         json_blob.upload_from_string(json.dumps(response_dict), content_type="application/json")
         logger.info("Saved raw transcript to %s", json_name)
-        # Format transcript
-    words = ttranscript_formatter.flatten_word_info(response_dict)
-        formatted = tratranscript_formatter.format_transcript
-        # Optionally clean transcript
+        # Flatten word information and format the transcript
+        words = transcript_formatter.flatten_word_info(response_dict)
+        formatted = transcript_formatter.format_transcript(words)
+        # Optionally clean the transcript
         if os.environ.get("ENABLE_CLEANING", "false").lower() == "true":
-formatted = transcript_cleaner.clean_transcript(formatted, words=words)
+            formatted = transcript_cleaner.clean_transcript(formatted, words=words)
+        # Save formatted transcript
         text_name = f"{TRANSCRIPTS_PREFIX}{base_name}.txt"
         txt_blob = bucket.blob(text_name)
         txt_blob.upload_from_string(formatted, content_type="text/plain")
