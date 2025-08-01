@@ -54,13 +54,18 @@ def transcribe(
         min_speaker_count=1,
         max_speaker_count=diarisation_speakers,
     )
+    
+    # Explicitly set encoding and sample rate for the 16‑kHz LINEAR16 WAV file.
     config = speech.RecognitionConfig(
+        encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+        sample_rate_hertz=16000,
         language_code=language_code,
         enable_automatic_punctuation=enable_automatic_punctuation,
         enable_word_confidence=enable_word_confidence,
         enable_word_time_offsets=enable_word_time_offsets,
         diarization_config=diarisation_config,
     )
+
     audio = speech.RecognitionAudio(uri=gcs_uri)
     logger.info("Starting STT job for %s", gcs_uri)
     operation = client.long_running_recognize(config=config, audio=audio)
