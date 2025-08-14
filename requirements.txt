@@ -4,3 +4,5 @@ google-cloud-storage
 google-cloud-speech
 pydub
 google-generativeai
+openai>=1.40.0
+ffmpeg-python>=0.2.0

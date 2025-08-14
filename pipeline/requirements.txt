@@ -3,3 +3,4 @@ google-cloud-speech>=2.23.0
 pydub>=0.25.1
 google-generativeai>=0.3.0  # Optional; used for transcript cleaning and summarisation
 ffmpeg-python>=0.2.0  # Optional; ensures ffmpeg is available in some environments
+openai>=1.40.0  # Required for OpenAI integration in summarizer and cleaner

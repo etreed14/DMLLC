@@ -47,7 +47,7 @@ def format_transcript(words: Iterable[Dict]) -> str:
 
     Words are grouped by speaker tag and the minute of the recording in
     which they occur.  The first word of each group starts a new line with
-    a label (``S1`` for speaker 1, optionally suffixed with ``|minute``).
+    a label (``S1`` for speaker 1, optionally suffixed with ``|minute``).
 
     Args:
         words: An iterable of word dictionaries as returned by
@@ -73,9 +73,9 @@ def format_transcript(words: Iterable[Dict]) -> str:
             label = f"S{speaker}"
             if minute != current_minute:
                 label += f"|{minute}"
-                current_minute = minute
             current_line = f"{label} {word}"
             current_speaker = speaker
+            current_minute = minute
         else:
             # Append punctuation directly without a preceding space
             if re.match(r"^[\.!?,:;]+$", word):
